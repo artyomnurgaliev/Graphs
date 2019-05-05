@@ -1,43 +1,24 @@
-dist:     trusty
-sudo:     required
-
 language: cpp
-
-os:
-- linux
-- osx
 
 compiler:
 - gcc
-- clang
 
-env:
-- TARGET_CPU=amd64 BUILD_CONFIGURATION=Debug
-- TARGET_CPU=amd64 BUILD_CONFIGURATION=Release
-- TARGET_CPU=x86 BUILD_CONFIGURATION=Debug
-- TARGET_CPU=x86 BUILD_CONFIGURATION=Release
+before_install:
+- mkdir $HOME/usr
+- export PATH="$HOME/usr/bin:$PATH"
+- wget https://cmake.org/files/v3.14/cmake-3.14.3-Linux-x86_64.sh
+- chmod +x cmake-3.14.3-Linux-x86_64.sh
+- ./cmake-3.14.3-Linux-x86_64.sh --prefix=$HOME/usr --exclude-subdir --skip-license
 
-matrix:
-  exclude:
-  - os:       osx
-    compiler: gcc
-
-  - os:  osx
-    env: TARGET_CPU=x86 BUILD_CONFIGURATION=Debug
-
-  - os:  osx
-    env: TARGET_CPU=x86 BUILD_CONFIGURATION=Release
-
-install:
-- source ci/travis/install-$TRAVIS_OS_NAME.sh
-
-script:
+before_script:
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU
-- cmake --build .
+- cmake ..
+
+script:
+- make
 
 notifications:
   email:
-    on_success: always
-    on_failure: always
+    on_success: never
+    on_failure: never
